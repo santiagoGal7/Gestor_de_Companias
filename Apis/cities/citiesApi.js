@@ -1,90 +1,92 @@
-const URL_API = "http://localhost:3001";
+const URL_API = "http://localhost:3000/";
 const myHeaders = new Headers({
     "Content-Type": "application/json"
 });
 
-const getAllCities = async () => {
+const getCiudades = async() => {
     try {
-        const respuesta = await fetch(`${URL_API}/cities`);
-        if (respuesta.status === 200) {
-            return await respuesta.json();
+        const respuesta = await fetch(`${URL_API}ciudades`);
+        if(respuesta.ok){
+            const datos = await respuesta.json();
+            console.log('Ciudades obtenidas:', datos);
+            return datos;
         } else {
-            throw new Error(`Error ${respuesta.status}`);
-        }
-    } catch (error) {
-        console.error('Error en GET all cities:', error.message);
+            console.error('Error al obtener ciudades:', respuesta.status);
+            return [];
+        } 
+    } catch(error){
+        console.error('Error en getCiudades:', error);
         return [];
     }
-};
+}
 
-const getCityById = async (id) => {
+const postCiudad = async (datos) => {
     try {
-        const respuesta = await fetch(`${URL_API}/cities/${id}`);
-        if (respuesta.status === 200) {
-            return await respuesta.json();
-        } else {
-            throw new Error(`Error ${respuesta.status}`);
-        }
-    } catch (error) {
-        console.error('Error en GET city by ID:', error.message);
-        return null;
-    }
-};
-
-const postCity = async (datos) => {
-    try {
-        const respuesta = await fetch(`${URL_API}/cities`, {
+        console.log('Enviando ciudad:', datos);
+        const response = await fetch(`${URL_API}ciudades`, {
             method: "POST",
             headers: myHeaders,
             body: JSON.stringify(datos)
         });
-        if (respuesta.ok) {
-            return await respuesta.json();
-        } else {
-            throw new Error(`Error ${respuesta.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        console.log('Ciudad guardada exitosamente:', data);
+        return data;
     } catch (error) {
-        console.error('Error en POST city:', error.message);
+        console.error('Error en POST ciudad:', error);
+        throw error;
     }
-};
+}
 
-const patchCity = async (datos, id) => {
+const patchCiudad = async (datos, id) => {
     try {
-        const respuesta = await fetch(`${URL_API}/cities/${id}`, {
+        console.log('Actualizando ciudad:', id, datos);
+        const response = await fetch(`${URL_API}ciudades/${id}`, {
             method: "PATCH",
             headers: myHeaders,
             body: JSON.stringify(datos)
         });
-        if (respuesta.ok) {
-            return await respuesta.json();
-        } else {
-            throw new Error(`Error ${respuesta.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        console.log('Ciudad actualizada:', data);
+        return data;
     } catch (error) {
-        console.error('Error en PATCH city:', error.message);
+        console.error('Error en PATCH ciudad:', error);
+        throw error;
     }
-};
+}
 
-const deleteCity = async (id) => {
+const deleteCiudad = async (id) => {
     try {
-        const respuesta = await fetch(`${URL_API}/cities/${id}`, {
+        console.log('Eliminando ciudad:', id);
+        const response = await fetch(`${URL_API}ciudades/${id}`, {
             method: "DELETE",
-            headers: myHeaders
+            headers: myHeaders,
         });
-        if (respuesta.ok) {
-            return await respuesta.json();
-        } else {
-            throw new Error(`Error ${respuesta.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        console.log('Ciudad eliminada:', data);
+        return data;
     } catch (error) {
-        console.error('Error en DELETE city:', error.message);
+        console.error('Error en DELETE ciudad:', error);
+        throw error;
     }
-};
-
+}
 export {
-    getAllCities,
-    getCityById,
-    postCity,
-    patchCity,
-    deleteCity
+    getCiudades,
+    postCiudad,
+    patchCiudad,
+    deleteCiudad
 };

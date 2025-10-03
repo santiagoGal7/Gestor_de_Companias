@@ -3,28 +3,27 @@ const myHeaders = new Headers({
     "Content-Type": "application/json"
 });
 
-
-const getPaises = async() => {
+const getSucursales = async() => {
     try {
-        const respuesta = await fetch(`${URL_API}paises`);
+        const respuesta = await fetch(`${URL_API}sucursales`);
         if(respuesta.ok){
             const datos = await respuesta.json();
-            console.log('Países obtenidos:', datos);
+            console.log('Sucursales obtenidas:', datos);
             return datos;
         } else {
-            console.error('Error al obtener países:', respuesta.status);
+            console.error('Error al obtener sucursales:', respuesta.status);
             return [];
         } 
     } catch(error){
-        console.error('Error en getPaises:', error);
+        console.error('Error en getSucursales:', error);
         return [];
     }
 }
 
-const postPais = async (datos) => {
+const postSucursal = async (datos) => {
     try {
-        console.log('Enviando país:', datos);
-        const response = await fetch(`${URL_API}paises`, {
+        console.log('Enviando sucursal:', datos);
+        const response = await fetch(`${URL_API}sucursales`, {
             method: "POST",
             headers: myHeaders,
             body: JSON.stringify(datos)
@@ -35,18 +34,18 @@ const postPais = async (datos) => {
         }
         
         const data = await response.json();
-        console.log('País guardado exitosamente:', data);
+        console.log('Sucursal guardada exitosamente:', data);
         return data;
     } catch (error) {
-        console.error('Error en POST país:', error);
+        console.error('Error en POST sucursal:', error);
         throw error;
     }
 }
 
-const patchPais = async (datos, id) => {
+const patchSucursal = async (datos, id) => {
     try {
-        console.log('Actualizando país:', id, datos);
-        const response = await fetch(`${URL_API}paises/${id}`, {
+        console.log('Actualizando sucursal:', id, datos);
+        const response = await fetch(`${URL_API}sucursales/${id}`, {
             method: "PATCH",
             headers: myHeaders,
             body: JSON.stringify(datos)
@@ -57,18 +56,18 @@ const patchPais = async (datos, id) => {
         }
         
         const data = await response.json();
-        console.log('País actualizado:', data);
+        console.log('Sucursal actualizada:', data);
         return data;
     } catch (error) {
-        console.error('Error en PATCH país:', error);
+        console.error('Error en PATCH sucursal:', error);
         throw error;
     }
 }
 
-const deletePais = async (id) => {
+const deleteSucursal = async (id) => {
     try {
-        console.log('Eliminando país:', id);
-        const response = await fetch(`${URL_API}paises/${id}`, {
+        console.log('Eliminando sucursal:', id);
+        const response = await fetch(`${URL_API}sucursales/${id}`, {
             method: "DELETE",
             headers: myHeaders,
         });
@@ -78,16 +77,17 @@ const deletePais = async (id) => {
         }
         
         const data = await response.json();
-        console.log('País eliminado:', data);
+        console.log('Sucursal eliminada:', data);
         return data;
     } catch (error) {
-        console.error('Error en DELETE país:', error);
+        console.error('Error en DELETE sucursal:', error);
         throw error;
     }
 }
+
 export {
-    getPaises,
-    postPais,
-    patchPais,
-    deletePais
+    getSucursales,
+    postSucursal,
+    patchSucursal,
+    deleteSucursal
 };

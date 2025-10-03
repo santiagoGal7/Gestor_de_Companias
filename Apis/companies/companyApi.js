@@ -3,28 +3,27 @@ const myHeaders = new Headers({
     "Content-Type": "application/json"
 });
 
-
-const getPaises = async() => {
+const getCompanias = async() => {
     try {
-        const respuesta = await fetch(`${URL_API}paises`);
+        const respuesta = await fetch(`${URL_API}companias`);
         if(respuesta.ok){
             const datos = await respuesta.json();
-            console.log('Países obtenidos:', datos);
+            console.log('Compañías obtenidas:', datos);
             return datos;
         } else {
-            console.error('Error al obtener países:', respuesta.status);
+            console.error('Error al obtener compañías:', respuesta.status);
             return [];
         } 
     } catch(error){
-        console.error('Error en getPaises:', error);
+        console.error('Error en getCompanias:', error);
         return [];
     }
 }
 
-const postPais = async (datos) => {
+const postCompania = async (datos) => {
     try {
-        console.log('Enviando país:', datos);
-        const response = await fetch(`${URL_API}paises`, {
+        console.log('Enviando compañía:', datos);
+        const response = await fetch(`${URL_API}companias`, {
             method: "POST",
             headers: myHeaders,
             body: JSON.stringify(datos)
@@ -35,18 +34,18 @@ const postPais = async (datos) => {
         }
         
         const data = await response.json();
-        console.log('País guardado exitosamente:', data);
+        console.log('Compañía guardada exitosamente:', data);
         return data;
     } catch (error) {
-        console.error('Error en POST país:', error);
+        console.error('Error en POST compañía:', error);
         throw error;
     }
 }
 
-const patchPais = async (datos, id) => {
+const patchCompania = async (datos, id) => {
     try {
-        console.log('Actualizando país:', id, datos);
-        const response = await fetch(`${URL_API}paises/${id}`, {
+        console.log('Actualizando compañía:', id, datos);
+        const response = await fetch(`${URL_API}companias/${id}`, {
             method: "PATCH",
             headers: myHeaders,
             body: JSON.stringify(datos)
@@ -57,18 +56,18 @@ const patchPais = async (datos, id) => {
         }
         
         const data = await response.json();
-        console.log('País actualizado:', data);
+        console.log('Compañía actualizada:', data);
         return data;
     } catch (error) {
-        console.error('Error en PATCH país:', error);
+        console.error('Error en PATCH compañía:', error);
         throw error;
     }
 }
 
-const deletePais = async (id) => {
+const deleteCompania = async (id) => {
     try {
-        console.log('Eliminando país:', id);
-        const response = await fetch(`${URL_API}paises/${id}`, {
+        console.log('Eliminando compañía:', id);
+        const response = await fetch(`${URL_API}companias/${id}`, {
             method: "DELETE",
             headers: myHeaders,
         });
@@ -78,16 +77,17 @@ const deletePais = async (id) => {
         }
         
         const data = await response.json();
-        console.log('País eliminado:', data);
+        console.log('Compañía eliminada:', data);
         return data;
     } catch (error) {
-        console.error('Error en DELETE país:', error);
+        console.error('Error en DELETE compañía:', error);
         throw error;
     }
 }
+
 export {
-    getPaises,
-    postPais,
-    patchPais,
-    deletePais
+    getCompanias,
+    postCompania,
+    patchCompania,
+    deleteCompania
 };

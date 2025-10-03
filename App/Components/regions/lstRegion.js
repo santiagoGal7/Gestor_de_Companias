@@ -1,49 +1,64 @@
+import { getRegiones } from '../../../Apis/regions/regApi.js';
 import { getPaises } from '../../../Apis/countries/countriesApi.js';
-
-export class LstPais extends HTMLElement {
+export class LstRegion extends HTMLElement {
   constructor() {
     super();
-    this.paises = [];
+    this.regiones = [];
+    this.paises = {};
     this.render();
-    this.cargarPaises();
+    this.cargarRegiones();
   }
 
-  async cargarPaises() {
+  async cargarRegiones() {
     try {
-      this.paises = await getPaises();
-      this.mostrarPaises();
+      const [regionesData, paisesData] = await Promise.all([
+        getRegiones(),
+        getPaises()
+      ]);
+      
+      this.regiones = regionesData;
+      
+      // Crear un mapa de países para búsqueda rápida
+      this.paises = paisesData.reduce((acc, pais) => {
+        acc[pais.id] = pais.nombrePais;
+        return acc;
+      }, {});
+      
+      this.mostrarRegiones();
     } catch (error) {
-      console.error('Error al cargar países:', error);
+      console.error('Error al cargar regiones:', error);
       this.mostrarError();
     }
   }
 
-  mostrarPaises() {
-    const tbody = this.querySelector('#tbodyPaises');
+  mostrarRegiones() {
+    const tbody = this.querySelector('#tbodyRegiones');
     
-    if (this.paises.length === 0) {
+    if (this.regiones.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="2" class="text-center">No hay países registrados</td>
+          <td colspan="4" class="text-center">No hay regiones registradas</td>
         </tr>
       `;
       return;
     }
 
-    tbody.innerHTML = this.paises.map(pais => `
+    tbody.innerHTML = this.regiones.map(region => `
       <tr>
-        <td>${pais.id}</td>
-        <td>${pais.nombrePais || 'N/A'}</td>
+        <td>${region.id}</td>
+        <td>${region.nombreRegion || 'N/A'}</td>
+        <td>${this.paises[region.paisId] || 'País no encontrado'}</td>
+        <td><span class="badge bg-secondary">${region.paisId || 'N/A'}</span></td>
       </tr>
     `).join('');
   }
 
   mostrarError() {
-    const tbody = this.querySelector('#tbodyPaises');
+    const tbody = this.querySelector('#tbodyRegiones');
     tbody.innerHTML = `
       <tr>
-        <td colspan="2" class="text-center text-danger">
-          Error al cargar los países. Por favor, intente nuevamente.
+        <td colspan="4" class="text-center text-danger">
+          Error al cargar las regiones. Por favor, intente nuevamente.
         </td>
       </tr>
     `;
@@ -53,7 +68,7 @@ export class LstPais extends HTMLElement {
     this.innerHTML = /* html */ `
       <div class="card mt-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span>Listado de Países</span>
+          <span>Listado de Regiones</span>
           <button class="btn btn-primary btn-sm" id="btnRecargar">
             Recargar
           </button>
@@ -64,12 +79,14 @@ export class LstPais extends HTMLElement {
               <thead class="table-dark">
                 <tr>
                   <th>ID</th>
-                  <th>Nombre del País</th>
+                  <th>Nombre de la Región</th>
+                  <th>País</th>
+                  <th>ID País</th>
                 </tr>
               </thead>
-              <tbody id="tbodyPaises">
+              <tbody id="tbodyRegiones">
                 <tr>
-                  <td colspan="2" class="text-center">
+                  <td colspan="4" class="text-center">
                     <div class="spinner-border text-primary" role="status">
                       <span class="visually-hidden">Cargando...</span>
                     </div>
@@ -87,7 +104,7 @@ export class LstPais extends HTMLElement {
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Cargando...';
       
-      await this.cargarPaises();
+      await this.cargarRegiones();
       
       btn.disabled = false;
       btn.innerHTML = 'Recargar';
@@ -95,4 +112,4 @@ export class LstPais extends HTMLElement {
   }
 }
 
-customElements.define("lst-pais", LstPais);
+customElements.define("lst-region", LstRegion);

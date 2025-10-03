@@ -1,51 +1,11 @@
-import { postCiudad, patchCiudad, deleteCiudad } from '../../../Apis/cities/citiesApi.js';
-import { getRegiones } from '../../../Apis/regions/regApi.js';
+import { postPais, patchPais, deletePais } from '../../../Apis/countries/countriesApi.js';
 
-export class RegCiudad extends HTMLElement {
+export class RegPais extends HTMLElement {
   constructor() {
     super();
-    this.regiones = [];
     this.render();
-    this.cargarRegiones();
     this.setupEvents();
     this.disableFrm(true);
-  }
-
-  async cargarRegiones() {
-    try {
-      this.regiones = await getRegiones();
-      this.llenarSelectRegiones();
-    } catch (error) {
-      console.error('Error al cargar regiones:', error);
-    }
-  }
-
-  llenarSelectRegiones() {
-    const select = this.querySelector('#regionId');
-    
-    if (this.regiones.length === 0) {
-      select.innerHTML = '<option value="">No hay regiones registradas</option>';
-      select.disabled = true;
-      this.mostrarAlerta();
-      return;
-    }
-
-    select.innerHTML = '<option value="">Seleccione una región</option>' +
-      this.regiones.map(region => 
-        `<option value="${region.id}">${region.nombreRegion}</option>`
-      ).join('');
-    select.disabled = false;
-    this.ocultarAlerta();
-  }
-
-  mostrarAlerta() {
-    const alerta = this.querySelector('#alertaRegiones');
-    alerta.style.display = 'block';
-  }
-
-  ocultarAlerta() {
-    const alerta = this.querySelector('#alertaRegiones');
-    alerta.style.display = 'none';
   }
 
   render() {
@@ -55,24 +15,14 @@ export class RegCiudad extends HTMLElement {
       </style>
       <div class="card mt-3">
         <div class="card-header">
-          Registro de Ciudad <span class="badge rounded-pill text-bg-primary" id="idView"></span>
+          Registro de País <span class="badge rounded-pill text-bg-primary" id="idView"></span>
         </div>
         <div class="card-body">
-          <div class="alert alert-warning" role="alert" id="alertaRegiones" style="display:none;">
-            <strong>¡Atención!</strong> No hay regiones disponibles. Debe registrar al menos una región antes de crear una ciudad.
-          </div>
-          <form id="frmCiudad">
+          <form id="frmPais">
             <div class="row">
-              <div class="col-md-6">
-                <label for="nombreCiudad" class="form-label">Nombre de la Ciudad <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="nombreCiudad" name="nombreCiudad" required>
-              </div>
-              <div class="col-md-6">
-                <label for="regionId" class="form-label">Región <span class="text-danger">*</span></label>
-                <select class="form-select" id="regionId" name="regionId" required>
-                  <option value="">Regiones registradas...</option>
-                </select>
-                <small class="text-muted">Debe existir al menos una región registrada</small>
+              <div class="col-md-12 mb-3">
+                <label for="nombrePais" class="form-label">Nombre del País <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nombrePais" name="nombrePais" required placeholder="Ingrese el nombre del país">
               </div>
             </div>
             <div class="row mt-3">
@@ -101,13 +51,10 @@ export class RegCiudad extends HTMLElement {
   }
 
   handleNuevo() {
-    if (this.regiones.length === 0) {
-      alert('Debe registrar al menos una región antes de crear una ciudad');
-      return;
-    }
     this.disableFrm(false);
     this.resetForm();
     this.toggleButtons(['btnGuardar', 'btnCancelar'], ['btnNuevo', 'btnEditar', 'btnEliminar']);
+    this.querySelector('#nombrePais').focus();
   }
 
   handleCancelar() {
@@ -117,25 +64,25 @@ export class RegCiudad extends HTMLElement {
   }
 
   async handleGuardar() {
-    const form = this.querySelector('#frmCiudad');
+    const form = this.querySelector('#frmPais');
     const data = Object.fromEntries(new FormData(form).entries());
     
-    if (!data.nombreCiudad || !data.regionId) {
-      alert('Por favor complete los campos obligatorios');
+    if (!data.nombrePais) {
+      alert('Por favor complete el campo obligatorio');
       return;
     }
 
     try {
-      const response = await postCiudad(data);
+      const response = await postPais(data);
       if (response && response.id) {
         this.viewData(response.id);
         this.toggleButtons(['btnNuevo', 'btnEditar', 'btnCancelar', 'btnEliminar'], ['btnGuardar']);
-        this.disableFrm(true); // AGREGADO
-        alert('Ciudad guardada exitosamente');
+        this.disableFrm(true);
+        alert('País guardado exitosamente');
       }
     } catch (error) {
       console.error('Error al guardar:', error);
-      alert('Error al guardar la ciudad');
+      alert('Error al guardar el país');
     }
   }
 
@@ -143,20 +90,20 @@ export class RegCiudad extends HTMLElement {
     const idView = this.querySelector('#idView').textContent;
     if (!idView) return;
 
-    const form = this.querySelector('#frmCiudad');
+    const form = this.querySelector('#frmPais');
     const data = Object.fromEntries(new FormData(form).entries());
 
-    if (!data.nombreCiudad || !data.regionId) {
-      alert('Por favor complete los campos obligatorios');
+    if (!data.nombrePais) {
+      alert('Por favor complete el campo obligatorio');
       return;
     }
 
     try {
-      await patchCiudad(data, idView);
-      alert('Ciudad actualizada exitosamente');
+      await patchPais(data, idView);
+      alert('País actualizado exitosamente');
     } catch (error) {
       console.error('Error al actualizar:', error);
-      alert('Error al actualizar la ciudad');
+      alert('Error al actualizar el país');
     }
   }
 
@@ -164,17 +111,17 @@ export class RegCiudad extends HTMLElement {
     const idView = this.querySelector('#idView').textContent;
     if (!idView) return;
 
-    if (!confirm('¿Está seguro de eliminar esta ciudad?')) return;
+    if (!confirm('¿Está seguro de eliminar este país?')) return;
 
     try {
-      await deleteCiudad(idView);
+      await deletePais(idView);
       this.resetForm();
       this.disableFrm(true);
       this.toggleButtons(['btnNuevo'], ['btnGuardar', 'btnCancelar', 'btnEditar', 'btnEliminar']);
-      alert('Ciudad eliminada exitosamente');
+      alert('País eliminado exitosamente');
     } catch (error) {
       console.error('Error al eliminar:', error);
-      alert('Error al eliminar la ciudad');
+      alert('Error al eliminar el país');
     }
   }
 
@@ -188,16 +135,16 @@ export class RegCiudad extends HTMLElement {
   }
 
   resetForm() {
-    this.querySelector('#frmCiudad').reset();
+    this.querySelector('#frmPais').reset();
     this.querySelector('#idView').textContent = '';
   }
 
   disableFrm(disabled) {
-    const form = this.querySelector('#frmCiudad');
+    const form = this.querySelector('#frmPais');
     Array.from(form.elements).forEach(el => {
       if (el.tagName !== 'BUTTON') el.disabled = disabled;
     });
   }
 }
 
-customElements.define("reg-ciudad", RegCiudad);
+customElements.define("reg-pais", RegPais);
